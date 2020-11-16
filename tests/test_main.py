@@ -2,7 +2,7 @@ from markdown_embed_code import get_code_emb
 
 
 def test_embed_code_from_file():
-    """```python:filepath or ```py:filepath are available."""
+    """```[lang]:[filepath] are available."""
     text = """```python:tests/src/sample.py\n```\n"""
     code_emb = get_code_emb()
     assert code_emb(text) == (
@@ -16,21 +16,9 @@ def test_embed_code_from_file():
         "```\n"
     )
 
-    text = """```py:tests/src/sample.py\n```\n"""
-    assert code_emb(text) == (
-        "```py:tests/src/sample.py\n"
-        "from math import sqrt\n"
-        "\n"
-        "\n"
-        "def sample(x):\n"
-        "    return sqrt(x)\n"
-        "\n"
-        "```\n"
-    )
-
 
 def test_override_embed_code_from_file():
-    """```python:filepath or ```py:filepath are available."""
+    """```[lang]:[filepath] are available."""
     text_contains_code = (
         """```python:tests/src/sample.py\nprint('code already exists')\n```\n"""
     )
