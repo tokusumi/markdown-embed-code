@@ -20,7 +20,7 @@ jobs:
         run: if [[ $(git status --porcelain | wc -l) -eq "0" ]]; then exit 1; fi
         continue-on-error: true
       - name: comment no changes
-        if: steps.modified.outcome == 'failure'
+        if: steps.modified.outcome == 'failure' && github.event.pull_request.merged == false
         run: |
           curl \
             -X POST \
