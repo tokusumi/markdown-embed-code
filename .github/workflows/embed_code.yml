@@ -1,21 +1,15 @@
 name: Embed code in README
 
 on:
-  pull_request_target:
+  pull_request:
     branches:
       - main
     types:
       - closed
-  workflow_dispatch:
-    inputs:
-      number:
-        description: PR number
-        required: true
 
 jobs:
   embed-code:
     runs-on: ubuntu-latest
-    continue-on-error: true
     steps:
       - uses: actions/checkout@v2
       - uses: tokusumi/markdown-embed-code@main
@@ -24,8 +18,9 @@ jobs:
       - name: Check modified
         id: modified
         run: if [[ $(git status --porcelain | wc -l) -eq "0" ]]; then exit 1; fi
+        continue-on-error: true
       - name: comment no changes
-        if: steps.modified.conclusion == 'failure'
+        if: steps.modified.outcome == 'failure'
         run: |
           curl \
             -X POST \
@@ -35,13 +30,13 @@ jobs:
             -d "{ \"body\": \"No changes on README!\" }"
       - name: Commit files
         id: commit
-        if: steps.modified.conclusion == 'success'
+        if: steps.modified.outcome == 'success'
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           git commit -m "Embedding code into Markdown" -a
       - name: Push changes
-        if: steps.commit.conclusion == 'success'
+        if: steps.modified.outcome == 'success'
         uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
