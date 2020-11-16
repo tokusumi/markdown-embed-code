@@ -15,7 +15,6 @@ on:
 jobs:
   embed-code:
     runs-on: ubuntu-latest
-    continue-on-error: true
     steps:
       - uses: actions/checkout@v2
       - uses: tokusumi/markdown-embed-code@main
@@ -24,6 +23,7 @@ jobs:
       - name: Check modified
         id: modified
         run: if [[ $(git status --porcelain | wc -l) -eq "0" ]]; then exit 1; fi
+        continue-on-error: true
       - name: comment no changes
         if: steps.modified.conclusion == 'failure'
         run: |
@@ -41,7 +41,7 @@ jobs:
           git config --local user.name "GitHub Action"
           git commit -m "Embedding code into Markdown" -a
       - name: Push changes
-        if: steps.commit.conclusion == 'success'
+        if: steps.modified.conclusion == 'success'
         uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
