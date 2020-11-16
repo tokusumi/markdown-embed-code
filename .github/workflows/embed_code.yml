@@ -15,6 +15,7 @@ on:
 jobs:
   embed-code:
     runs-on: ubuntu-latest
+    continue-on-error: true
     steps:
       - uses: actions/checkout@v2
       - uses: tokusumi/markdown-embed-code@main
@@ -26,7 +27,15 @@ jobs:
           git config --local user.name "GitHub Action"
           git commit -m "Embedding code into Markdown" -a
       - name: Push changes
+        if: success()
         uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           branch: ${{ github.ref }}
+      - name: comment no changes
+        if: failure()
+        uses: unsplash/comment-on-pr@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          msg: "No changes on README!"
