@@ -1,0 +1,10 @@
+version: '3'
+
+services:
+  app:
+    build: ../
+    command: python -m markdown_embed_code
+    volumes:
+      - ../:/app/
+    environment:
+      - INPUT_OUTPUT=readme.md
