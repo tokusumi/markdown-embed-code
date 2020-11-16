@@ -25,7 +25,7 @@ jobs:
         run: if [[ $(git status --porcelain | wc -l) -eq "0" ]]; then exit 1; fi
         continue-on-error: true
       - name: comment no changes
-        if: steps.modified.conclusion == 'failure'
+        if: steps.modified.outputs.status == 'failure'
         run: |
           curl \
             -X POST \
@@ -35,13 +35,13 @@ jobs:
             -d "{ \"body\": \"No changes on README!\" }"
       - name: Commit files
         id: commit
-        if: steps.modified.conclusion == 'success'
+        if: steps.modified.outputs.status == 'success'
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           git commit -m "Embedding code into Markdown" -a
       - name: Push changes
-        if: steps.modified.conclusion == 'success'
+        if: steps.modified.outputs.status == 'success'
         uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
