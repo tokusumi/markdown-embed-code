@@ -2,6 +2,7 @@
 
 First GitHub Actions testing.
 
+Second GitHub Actions testing.
 
 Code is embedded at the followings by GitHub Actions:
 
