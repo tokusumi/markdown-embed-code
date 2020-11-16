@@ -32,7 +32,7 @@ NOTE: Read file by passed path, where the top directory in your repo is working 
 
 ### How to use - workflow example
 
-Override README.md and push by action:
+Override README.md and push by action if readme is changed:
 
 
 ```yaml
@@ -48,6 +48,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+          persist-credentials: false # otherwise, the token used is the GITHUB_TOKEN, instead of your personal token
+          fetch-depth: 0 # otherwise, you will failed to push refs to dest repo
+
       - uses: tokusumi/markdown-embed-code@main
         with:
           markdown: "README.md"
@@ -60,5 +63,5 @@ jobs:
         uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: ${{ github.ref }}
+          branch: ${{ github.head_ref }}
 ```
