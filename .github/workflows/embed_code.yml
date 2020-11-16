@@ -7,9 +7,9 @@ on:
     types:
       - closed
   workflow_dispatch:
-    inputs:
-      number:
-        description: PR number
+    pull_request:
+      comments_url:
+        description: comment URL
         required: true
 
 jobs:
