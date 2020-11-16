@@ -25,13 +25,13 @@ jobs:
         run: if [[ $(git status --porcelain | wc -l) -eq "0" ]]; then exit 1; fi
       - name: comment no changes
         if: steps.modified.conclusion == 'failure'
-          run: |
-            curl \
-              -X POST \
-              ${{ github.event.pull_request.comments_url }} \
-              -H 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' \
-              -H 'content-type: application/json' \
-              -d "{ \"body\": \"No changes on README!\" }"
+        run: |
+          curl \
+            -X POST \
+            ${{ github.event.pull_request.comments_url }} \
+            -H 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' \
+            -H 'content-type: application/json' \
+            -d "{ \"body\": \"No changes on README!\" }"
       - name: Commit files
         id: commit
         if: steps.modified.conclusion == 'success'
