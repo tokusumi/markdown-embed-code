@@ -1,0 +1,32 @@
+name: Embed code in README
+
+on:
+  pull_request_target:
+    branches:
+      - main
+    types:
+      - closed
+  workflow_dispatch:
+    inputs:
+      number:
+        description: PR number
+        required: true
+
+jobs:
+  embed-code:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: tokusumi/markdown-embed-code@main
+        with:
+          markdown: "README.md"
+      - name: Commit files
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git commit -m "Embedding code into Markdown" -a
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ github.ref }}
