@@ -1,6 +1,6 @@
 name: Markdown Embed Code From File
 author: "@tokusumi"
-description: Embed Python code into Markdown from external file
+description: Embed "any" code into Markdown from external file
 inputs:
   markdown:
     description: Target markdown file path.
