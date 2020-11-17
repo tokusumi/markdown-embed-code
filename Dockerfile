@@ -2,7 +2,7 @@ FROM python:3.7-slim
 
 COPY ./requirements.txt /app/requirements.txt
 
-RUN pip install -r /app/requirements.txt
+RUN pip install --no-cache -r /app/requirements.txt
 
 COPY ./markdown_embed_code /app/markdown_embed_code
 
