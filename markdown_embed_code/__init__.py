@@ -12,6 +12,13 @@ class MarkdownEmbEodeRenderer(MarkdownRenderer):
             element.children[0].children = f"{code}\n"
         return super().render_fenced_code(element)
 
+    def render_image(self, element):
+        template = "![{}]({}{})"
+        title = (
+            ' "{}"'.format(element.title.replace('"', '\\"')) if element.title else ""
+        )
+        return template.format(self.render_children(element), element.dest, title)
+
 
 def get_code_emb():
     markdown = Markdown(renderer=MarkdownEmbEodeRenderer)
