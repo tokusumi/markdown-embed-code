@@ -3,6 +3,7 @@
 Embedding code into markdown from external file.
 Any language's code blocks are available.
 
+See [demo repo](https://github.com/tokusumi/readme-code-testing) if you are interested in testing code within README.
 
 ## How to use
 
