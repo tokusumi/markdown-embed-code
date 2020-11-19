@@ -1,6 +1,6 @@
 name: Markdown Embed Code From File
 author: "@tokusumi"
-description: Embed "any" code into Markdown from external file
+description: Action to synchronize "any" code in markdown with an external file. No more managing code as plain text.
 inputs:
   markdown:
     description: Target markdown file path.
