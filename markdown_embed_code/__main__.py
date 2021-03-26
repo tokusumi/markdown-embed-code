@@ -64,8 +64,11 @@ embedded_doc = md(doc)
 with open(output_path, "w") as f:
     f.write(embedded_doc)
 
-proc = subprocess.run(["git", "status", "--porcelain", "|", "wc", "-l"], check=True)
-if proc.returncode != 0:
+
+proc = subprocess.run(
+    ["git", "status", "--porcelain"], check=True, stdout=subprocess.PIPE
+)
+if not proc.stdout:
     # no change
     pr.create_issue_comment(settings.input_no_change)
     sys.exit(0)
