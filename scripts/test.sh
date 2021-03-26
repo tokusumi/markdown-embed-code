@@ -1,7 +1,7 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-SCRIPT_DIR=$(cd $(dirname $0); pwd)
-ROOT=$SCRIPT_DIR/../
+set -e
+set -x
 
-cd ROOT
-pytest .
+bash ./scripts/lint.sh
+pytest --cov=markdown_embed_code --cov=tests --cov-report=term-missing --cov-report=xml tests ${@}
