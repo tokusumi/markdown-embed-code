@@ -46,7 +46,6 @@ elif event.inputs and event.inputs.number:
 else:
     sys.exit(1)
 pr = repo.get_pull(number)
-print(f"from {pr.base} to {pr.head}")
 if pr.merged:
     # ignore at merged
     sys.exit(0)
@@ -76,4 +75,4 @@ if not proc.stdout:
 
 subprocess.run(["git", "add", output_path], check=True)
 subprocess.run(["git", "commit", "-m", settings.input_message], check=True)
-subprocess.run(["git", "push", "origin", f"HEAD:{pr.head}"], check=True)
+subprocess.run(["git", "push", "origin", f"HEAD:{pr.head.ref}"], check=True)
