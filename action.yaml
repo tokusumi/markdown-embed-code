@@ -2,10 +2,21 @@ name: Markdown Embed Code From File
 author: "@tokusumi"
 description: Action to synchronize "any" code in markdown with an external file. No more managing code as plain text.
 inputs:
+  token:
+    description: Token for the repo. Can be passed in using {{ secrets.GITHUB_TOKEN}}
+    required: true
   markdown:
     description: Target markdown file path.
     required: false
     default: "README.md"
+  message:
+    description: Commit message for action.
+    required: false
+    default: "Embedding code into Markdown"
+  no_change:
+    description: Issue comment at no changed
+    required: false
+    default: "No changes on README!" 
   output:
     description: Output markdown file path. If none, override target file.
     required: false
