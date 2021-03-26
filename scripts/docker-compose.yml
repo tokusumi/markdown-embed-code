@@ -8,3 +8,6 @@ services:
       - ../:/app/
     environment:
       - INPUT_OUTPUT=readme.md
+      - INPUT_TOKEN=xxx
+      - GITHUB_REPOSITORY=markdown-embed-code
+      - GITHUB_EVENT_PATH=https://github.com/tokusumi/markdown-embed-code/pull/6

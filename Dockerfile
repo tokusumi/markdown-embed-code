@@ -1,5 +1,7 @@
 FROM python:3.7-alpine
 
+RUN apk update && apk --no-cache add git
+
 COPY ./requirements.txt /app/requirements.txt
 
 RUN pip install --no-cache -r /app/requirements.txt
