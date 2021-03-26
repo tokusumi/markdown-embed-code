@@ -77,5 +77,7 @@ if not proc.stdout:
 subprocess.run(["git", "add", output_path], check=True)
 subprocess.run(["git", "commit", "-m", settings.input_message], check=True)
 
-remote_repo = f"https://{settings.github_actor}:{settings.input_token}@github.com/{settings.github_repository}.git"
-subprocess.run(["git", "push", remote_repo, f"HEAD:{pr.head.ref}"], check=True)
+remote_repo = f"https://{settings.github_actor}:{settings.input_token.get_secret_value()}@github.com/{settings.github_repository}.git"
+proc = subprocess.run(["git", "push", remote_repo, f"HEAD:{pr.head.ref}"], check=False)
+if proc.returncode != 0:
+    sys.exit(1)
