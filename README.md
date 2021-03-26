@@ -24,6 +24,7 @@ from math import sqrt
 def sample(x):
     return sqrt(x)
 
+
 ```
 
 NOTE: Read file by passed path, where the top directory in your repo is working directory. If the path is wrong, this action is failed.
