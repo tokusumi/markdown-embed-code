@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Sized
 import sys
 from pathlib import Path
 import subprocess
@@ -14,6 +14,7 @@ class Settings(BaseSettings):
     input_message: str = "📝 Update Readme"
     input_no_change: str = "No changes on README!"
     input_output: Path = Path("")
+    input_silent: bool = False
     input_token: SecretStr
     github_actor: str
     github_repository: str
@@ -73,7 +74,8 @@ proc = subprocess.run(
 )
 if not proc.stdout:
     # no change
-    pr.create_issue_comment(settings.input_no_change)
+    if not settings.input_silent:
+        pr.create_issue_comment(settings.input_no_change)
     sys.exit(0)
 
 subprocess.run(["git", "add", output_path], check=True)

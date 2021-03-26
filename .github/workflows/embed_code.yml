@@ -21,3 +21,4 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           message: "auto commit for embedding"
           no_change: "No change on Readme."
+          silent: true

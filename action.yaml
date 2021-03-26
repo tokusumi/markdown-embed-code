@@ -21,6 +21,10 @@ inputs:
     description: Output markdown file path. If none, override target file.
     required: false
     default: ""
+  silent:
+    description: "No issue comment in silent mode"
+    required: false
+    default: false
 runs:
   using: docker
   image: Dockerfile
