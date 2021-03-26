@@ -1,8 +1,6 @@
 #!/bin/bash
 
-SCRIPT_DIR=$(cd $(dirname $0); pwd)
-ROOT=$SCRIPT_DIR/../
+set -x
 
-cd ROOT
-docker-compose -f scripts/docker-compose.yml up
+docker-compose -f scripts/docker-compose.yml up --build
 docker-compose -f scripts/docker-compose.yml down

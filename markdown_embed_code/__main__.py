@@ -1,10 +1,10 @@
-from typing import Optional, Sized
+import subprocess
 import sys
 from pathlib import Path
-import subprocess
+from typing import Optional
 
-from pydantic import BaseSettings, SecretStr, BaseModel
 from github import Github
+from pydantic import BaseModel, BaseSettings, SecretStr
 
 from markdown_embed_code import get_code_emb
 
