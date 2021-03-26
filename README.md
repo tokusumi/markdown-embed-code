@@ -9,7 +9,6 @@ See [demo repo](https://github.com/tokusumi/readme-code-testing) if you are inte
 
 In markdown, write code block as follows:
 
-
 ```markdown
 　```python:tests/src/sample.py
 　
@@ -17,7 +16,6 @@ In markdown, write code block as follows:
 ```
 
 Then, this action referes to `tests/src/sample.py` and modifies markdown as (if something code is written, they are overridden):
-
 
 ```python:tests/src/sample.py
 from math import sqrt
@@ -30,11 +28,9 @@ def sample(x):
 
 NOTE: Read file by passed path, where the top directory in your repo is working directory. If the path is wrong, this action is failed.
 
-
 ### How to use - workflow example
 
 Override README.md and push by action if readme is changed:
-
 
 ```yaml
 name: Embed code in README
