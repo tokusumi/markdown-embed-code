@@ -15,33 +15,11 @@ jobs:
         with:
           persist-credentials: false # otherwise, the token used is the GITHUB_TOKEN, instead of your personal token
           fetch-depth: 0 # otherwise, you will failed to push refs to dest repo
-      - uses: tokusumi/markdown-embed-code@main
+          ref: refs/heads/${{ github.head_ref }}
+      - uses: './'
         with:
           markdown: "README.md"
-      - name: Check modified
-        id: modified
-        run: if [[ $(git status --porcelain | wc -l) -eq "0" ]]; then exit 1; fi
-        continue-on-error: true
-      - name: comment no changes
-        if: steps.modified.outcome == 'failure' && github.event.pull_request.merged == false
-        run: |
-          curl \
-            -X POST \
-            ${{ github.event.pull_request.comments_url }} \
-            -H 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' \
-            -H 'content-type: application/json' \
-            -d "{ \"body\": \"No changes on README!\" }"
-      - name: Commit files
-        id: commit
-        if: steps.modified.outcome == 'success'
-        run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          git commit -m "Embedding code into Markdown" -a
-      - name: Push changes
-        if: steps.modified.outcome == 'success'
-        uses: ad-m/github-push-action@master
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: ${{ github.head_ref }}
-     
+          token: ${{ secrets.GITHUB_TOKEN }}
+          message: "auto commit for embedding"
+          no_change: "No change on Readme."
+          silent: true
