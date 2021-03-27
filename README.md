@@ -7,12 +7,17 @@ See [demo repo](https://github.com/tokusumi/readme-code-testing) if you are inte
 
 ## How to use
 
-In markdown, write code block as follows:
+In markdown, write code block as follows (notice that escape sequence "\\" must be eliminated):
 
 ```markdown
-　```python:tests/src/sample.py
-　
-　```
+　\```python:tests/src/sample.py
+ 
+　\```
+
+  And, you can refer specific lines as
+  \```python:tests/src/sample.py [4-5]
+  
+  \```
 ```
 
 Then, this action referes to `tests/src/sample.py` and modifies markdown as (if something code is written, they are overridden):
@@ -24,6 +29,13 @@ from math import sqrt
 def sample(x):
     return sqrt(x)
 
+```
+
+And, specific lines is refered as
+
+```python:tests/src/sample.py [4-5]
+def sample(x):
+    return sqrt(x)
 ```
 
 NOTE: Read file by passed path, where the top directory in your repo is working directory. If the path is wrong, this action is failed.
@@ -47,18 +59,12 @@ jobs:
       - uses: actions/checkout@v2
           persist-credentials: false # otherwise, the token used is the GITHUB_TOKEN, instead of your personal token
           fetch-depth: 0 # otherwise, you will failed to push refs to dest repo
+          ref: refs/heads/${{ github.head_ref }}
 
       - uses: tokusumi/markdown-embed-code@main
         with:
           markdown: "README.md"
-      - name: Commit files
-        run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          git commit -m "Embedding code into Markdown" -a
-      - name: Push changes
-        uses: ad-m/github-push-action@master
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: ${{ github.head_ref }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          message: "synchronizing Readme"
+          silent: true
 ```
