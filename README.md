@@ -15,10 +15,9 @@ In markdown, write code block as follows:
 　```
 
   And, you can refer specific lines as
-
   ```python:tests/src/sample.py [4-5]
 
-```
+  ```
 ```
 
 Then, this action referes to `tests/src/sample.py` and modifies markdown as (if something code is written, they are overridden):
