@@ -68,3 +68,14 @@ jobs:
           message: "synchronizing Readme"
           silent: true
 ```
+
+### Configuration
+
+| input                | description                                                             |
+| -------------------- | ----------------------------------------------------------------------- |
+| token                | Token for the repo. Can be passed in using {{ secrets.GITHUB_TOKEN }}   |
+| markdown (Optional)  | Target markdown file path. (default: "README.md")                       |
+| message (Optional)   | Commit message for action. (default: "Embedding code into Markdown")    |
+| no_change (Optional) | Issue comment at no changed (default: "No changes on README!" )         |
+| output (Optional)    | Output markdown file path. If none, override target file. (default: "") |
+| silent (Optional)    | No issue comment in silent mode (default: false)                        |

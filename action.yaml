@@ -3,7 +3,7 @@ author: "@tokusumi"
 description: Action to synchronize "any" code in markdown with an external file. No more managing code as plain text.
 inputs:
   token:
-    description: Token for the repo. Can be passed in using {{ secrets.GITHUB_TOKEN}}
+    description: Token for the repo. Can be passed in using {{ secrets.GITHUB_TOKEN }}
     required: true
   markdown:
     description: Target markdown file path.
