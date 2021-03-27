@@ -17,7 +17,7 @@ In markdown, write code block as follows:
   And, you can refer specific lines as
   ```python:tests/src/sample.py [4-5]
 
-  ```
+```
 ```
 
 Then, this action referes to `tests/src/sample.py` and modifies markdown as (if something code is written, they are overridden):
@@ -35,7 +35,7 @@ And, specific lines is refered as
 
 ```python:tests/src/sample.py [4-5]
 def sample(x):
-
+    return sqrt(x)
 ```
 
 NOTE: Read file by passed path, where the top directory in your repo is working directory. If the path is wrong, this action is failed.
