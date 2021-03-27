@@ -18,7 +18,7 @@ In markdown, write code block as follows:
 
   ```python:tests/src/sample.py [4-5]
 
-  ```
+```
 ```
 
 Then, this action referes to `tests/src/sample.py` and modifies markdown as (if something code is written, they are overridden):
@@ -35,6 +35,7 @@ def sample(x):
 And, specific lines is refered as
 
 ```python:tests/src/sample.py [4-5]
+def sample(x):
 
 ```
 
