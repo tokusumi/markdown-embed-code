@@ -18,6 +18,7 @@ class Settings(BaseSettings):
     input_token: SecretStr
     github_actor: str
     github_repository: str
+    github_event_name: str
     github_event_path: Path
 
 
@@ -26,6 +27,7 @@ class PartialGitHubEventInputs(BaseModel):
 
 
 class PartialGitHubEvent(BaseModel):
+    ref: Optional[str] = None
     number: Optional[int] = None
     inputs: Optional[PartialGitHubEventInputs] = None
 
@@ -36,29 +38,39 @@ subprocess.run(
     ["git", "config", "--local", "user.email", "github-actions@github.com"], check=True
 )
 
-
 g = Github(settings.input_token.get_secret_value())
 repo = g.get_repo(settings.github_repository)
 if not settings.github_event_path.is_file():
     sys.exit(1)
 contents = settings.github_event_path.read_text()
 event = PartialGitHubEvent.parse_raw(contents)
-if event.number is not None:
-    number = event.number
-elif event.inputs and event.inputs.number:
-    number = event.inputs.number
-else:
-    sys.exit(1)
-pr = repo.get_pull(number)
-if pr.merged:
-    # ignore at merged
-    sys.exit(0)
 
+ref = None
+
+if settings.github_event_name == 'pull_request':
+    if event.number is not None:
+        number = event.number
+    elif event.inputs and event.inputs.number:
+        number = event.inputs.number
+    else:
+        sys.exit(1)
+    
+    pr = repo.get_pull(number)
+    if pr.merged:
+        # ignore at merged
+        sys.exit(0)
+    ref = pr.head.ref
+elif settings.github_event_name == 'push':
+    ref = event.ref
+
+if not ref:
+    print('unknown ref', ref)
+    sys.exit(0)
+    
 if not settings.input_output.is_dir():
     output_path = settings.input_output
 else:
     output_path = settings.input_markdown
-
 with open(settings.input_markdown, "r") as f:
     doc = f.read()
 
@@ -82,6 +94,6 @@ subprocess.run(["git", "add", output_path], check=True)
 subprocess.run(["git", "commit", "-m", settings.input_message], check=True)
 
 remote_repo = f"https://{settings.github_actor}:{settings.input_token.get_secret_value()}@github.com/{settings.github_repository}.git"
-proc = subprocess.run(["git", "push", remote_repo, f"HEAD:{pr.head.ref}"], check=False)
+proc = subprocess.run(["git", "push", remote_repo, f"HEAD:{ref}"], check=False)
 if proc.returncode != 0:
     sys.exit(1)
