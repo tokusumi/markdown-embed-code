@@ -7,18 +7,18 @@ See [demo repo](https://github.com/tokusumi/readme-code-testing) if you are inte
 
 ## How to use
 
-In markdown, write code block as follows (notice that escape sequence "\\" must be eliminated):
+In markdown, write code block as follows:
 
-```markdown
-　\```python:tests/src/sample.py
- 
-　\```
+````markdown
+```python:tests/src/sample.py
 
-  And, you can refer specific lines as
-  \```python:tests/src/sample.py [4-5]
-  
-  \```
 ```
+
+And, you can refer specific lines as
+```python:tests/src/sample.py [4-5]
+ 
+```
+````
 
 Then, this action referes to `tests/src/sample.py` and modifies markdown as (if something code is written, they are overridden):
 
