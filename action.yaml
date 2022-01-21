@@ -16,7 +16,7 @@ inputs:
   no_change:
     description: Issue comment at no changed
     required: false
-    default: "No changes on README!" 
+    default: "No changes on README!"
   output:
     description: Output markdown file path. If none, override target file.
     required: false
@@ -24,7 +24,11 @@ inputs:
   silent:
     description: "No issue comment in silent mode"
     required: false
-    default: false
+    default: "false"
+  server:
+    description: Github server URL
+    required: false
+    default: ${{ github.server_url || 'https://github.com' }}
 runs:
   using: docker
   image: Dockerfile
