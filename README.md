@@ -60,7 +60,7 @@ jobs:
         with:
           persist-credentials: false # otherwise, the token used is the GITHUB_TOKEN, instead of your personal token
           fetch-depth: 0 # otherwise, you will failed to push refs to dest repo
-          ref: refs/heads/${{ github.head_ref }}
+          ref: ${{ github.head_ref }}
 
       - uses: tokusumi/markdown-embed-code@main
         with:
