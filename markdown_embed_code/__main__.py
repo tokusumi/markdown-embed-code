@@ -5,6 +5,7 @@ from typing import Optional
 
 from github import Github
 from pydantic import BaseModel, BaseSettings, SecretStr
+from urllib.parse import urlparse
 
 from markdown_embed_code import get_code_emb
 
@@ -16,6 +17,7 @@ class Settings(BaseSettings):
     input_output: Path = Path("")
     input_silent: bool = False
     input_token: SecretStr
+    input_server: str
     github_actor: str
     github_repository: str
     github_event_name: str
@@ -38,7 +40,7 @@ subprocess.run(
     ["git", "config", "--local", "user.email", "github-actions@github.com"], check=True
 )
 
-g = Github(settings.input_token.get_secret_value())
+g = Github(base_url=f"{settings.input_server}/api/v3", login_or_token=settings.input_token.get_secret_value())
 repo = g.get_repo(settings.github_repository)
 if not settings.github_event_path.is_file():
     sys.exit(1)
@@ -54,7 +56,7 @@ if settings.github_event_name == 'pull_request':
         number = event.inputs.number
     else:
         sys.exit(1)
-    
+
     pr = repo.get_pull(number)
     if pr.merged:
         # ignore at merged
@@ -66,7 +68,7 @@ elif settings.github_event_name == 'push':
 if not ref:
     print('unknown ref', ref)
     sys.exit(0)
-    
+
 if not settings.input_output.is_dir():
     output_path = settings.input_output
 else:
@@ -93,7 +95,7 @@ if not proc.stdout:
 subprocess.run(["git", "add", output_path], check=True)
 subprocess.run(["git", "commit", "-m", settings.input_message], check=True)
 
-remote_repo = f"https://{settings.github_actor}:{settings.input_token.get_secret_value()}@github.com/{settings.github_repository}.git"
+remote_repo = f"https://{settings.github_actor}:{settings.input_token.get_secret_value()}@{urlparse(settings.input_server).hostname}/{settings.github_repository}.git"
 proc = subprocess.run(["git", "push", remote_repo, f"HEAD:{ref}"], check=False)
 if proc.returncode != 0:
     sys.exit(1)

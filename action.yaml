@@ -25,6 +25,10 @@ inputs:
     description: "No issue comment in silent mode"
     required: false
     default: "false"
+  server:
+    description: Github server URL
+    required: false
+    default: ${{ github.server_url || 'https://github.com' }}
 runs:
   using: docker
   image: Dockerfile

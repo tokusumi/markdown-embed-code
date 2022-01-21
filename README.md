@@ -16,7 +16,7 @@ In markdown, write code block as follows:
 
 And, you can refer specific lines as
 ```python:tests/src/sample.py [4-5]
- 
+
 ```
 ````
 
@@ -80,3 +80,4 @@ jobs:
 | no_change (Optional) | Issue comment at no changed (default: "No changes on README!" )         |
 | output (Optional)    | Output markdown file path. If none, override target file. (default: "") |
 | silent (Optional)    | No issue comment in silent mode (default: false)                        |
+| server (Optional)    | GitHub server URL (default: https://github.com)                         |
