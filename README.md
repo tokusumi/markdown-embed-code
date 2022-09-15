@@ -1,26 +1,25 @@
 # markdown-embed-code
 
-Embedding code into markdown from external file.
-Any language's code blocks are available.
+Forked from [https://github.com/tokusumi/readme-code-testing](https://github.com/tokusumi/readme-code-testing) and partially rewritten with some fixes, some features added, some removed.
 
-See [demo repo](https://github.com/tokusumi/readme-code-testing) if you are interested in testing code within README.
+Allows you to "import" code into your markdown files from elsewhere in your repository without having to manually copy and paste.
+Supports code blocks in any language. Your original markdown file(s) will be overwritten with the rendered content.
 
-## How to use
+<!-- See [demo repo](https://github.com/tokusumi/readme-code-testing) if you are interested in testing code within README. -->
 
-In markdown, write code block as follows:
+## Usage
+
+### Embedding Entire files
+
+In markdown, reference your file as follows in an otherwise empty code block.
 
 ````markdown
 ```python:tests/src/sample.py
 
 ```
-
-And, you can refer specific lines as
-```python:tests/src/sample.py [4-5]
- 
-```
 ````
 
-Then, this action referes to `tests/src/sample.py` and modifies markdown as (if something code is written, they are overridden):
+The action reads in the content from `tests/src/sample.py` and inserts its contents into your code block like so:
 
 ```python:tests/src/sample.py
 from math import sqrt
@@ -31,18 +30,28 @@ def sample(x):
 
 ```
 
-And, specific lines is refered as
+Any contents within your code block will be overwritten. Paths are relative to the root of your repository and not the directory containing the file being processed.
+
+### Embedding Snippets
+
+You can pull in a snippet from a file by including a range of line numbers like so:
+
+````markdown
+```python:tests/src/sample.py [4-5]
+
+```
+````
+
+Which will render the following output.
 
 ```python:tests/src/sample.py [4-5]
 def sample(x):
     return sqrt(x)
 ```
 
-NOTE: Read file by passed path, where the top directory in your repo is working directory. If the path is wrong, this action is failed.
+### Workflow setup
 
-### How to use - workflow example
-
-Override README.md and push by action if readme is changed:
+Process README.md, import any referenced code, and push to your repo if there are any changes.
 
 ```yaml
 name: Embed code in README
@@ -56,27 +65,33 @@ jobs:
   embed-code:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           persist-credentials: false # otherwise, the token used is the GITHUB_TOKEN, instead of your personal token
           fetch-depth: 0 # otherwise, you will failed to push refs to dest repo
-          ref: refs/heads/${{ github.head_ref }}
+          ref: ${{ github.head_ref }}
 
-      - uses: tokusumi/markdown-embed-code@main
+      - uses: analogous-structures-labs/markdown-embed-code@main
         with:
           markdown: "README.md"
+          message: "Synchronize Readme."
           token: ${{ secrets.GITHUB_TOKEN }}
-          message: "synchronizing Readme"
-          silent: true
 ```
 
 ### Configuration
 
-| input                | description                                                             |
-| -------------------- | ----------------------------------------------------------------------- |
-| token                | Token for the repo. Can be passed in using {{ secrets.GITHUB_TOKEN }}   |
-| markdown (Optional)  | Target markdown file path. (default: "README.md")                       |
-| message (Optional)   | Commit message for action. (default: "Embedding code into Markdown")    |
-| no_change (Optional) | Issue comment at no changed (default: "No changes on README!" )         |
-| output (Optional)    | Output markdown file path. If none, override target file. (default: "") |
-| silent (Optional)    | No issue comment in silent mode (default: false)                        |
+| input                | description                                                              |
+| -------------------- | ------------------------------------------------------------------------ |
+| token                | Token for the repo. Can be passed in using `{{ secrets.GITHUB_TOKEN }}`. |
+| markdown (Optional)  | Target path for your markdown file(s). (default: "README.md")            |
+| message (Optional)   | Commit message for action. (default: "Embed code into Markdown.")        |
+
+
+### Specifying your markdown path
+
+The value provided for the `markdown` parameter supports specifying directories and glob patterns.
+"README.md" will process only the top level README.
+"some_dir" will process any files in some_dir with .md as their file extension.
+"some_dir/README.md" will process only the README file within some_dir.
+"\*\*/README.md" will process any markdown files named README.md, recursively through your repository.
+"\*\*/*.md" will process any markdown files with .md as their file extension, recursively through your repository.

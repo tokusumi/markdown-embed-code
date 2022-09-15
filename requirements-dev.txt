@@ -1,9 +1,8 @@
-marko>=0.9.1
-pydantic>=1.6.1,<1.7.0
-PyGithub
-pytest
-pytest-cov
-black
-flake8
-isort
-autoflake
+autoflake=1.5.3
+black=22.8.0
+flake8=5.0.4
+isort=5.10.1
+marko==1.2.1
+pydantic==1.10.2
+pytest-cov==3.0.0
+pytest==7.1.3
