@@ -35,6 +35,11 @@ def overwrite_file(file_handle, new_contents):
 
 settings = Settings()
 
+# The checkout action appears to checkout code as the runner user yet the documentation for docker
+# based roles insists that you not change user in your Dockerfile. For that reason, we're making sure
+# that the directories we're operating on are own by the user as whom we're running.
+run_command(["chown", "-R", "$(id -u):$(id -g)", "."])
+
 run_command(["git", "config", "--local", "user.name", "github-actions"])
 run_command(["git", "config", "--local", "user.email", "github-actions@github.com"])
 
