@@ -1,28 +1,38 @@
+from __future__ import annotations
+
+import re
+
+from dataclasses import dataclass
 from pathlib import Path
-from typing import Optional, Tuple
+from typing import Optional
 
 from marko import Markdown
 from marko.md_renderer import MarkdownRenderer
 
 
-def parse(option: str) -> Tuple[Path, int, Optional[int]]:
-    file, *options = option.split("[", 1)
-    file_path = Path(file.strip())
+@dataclass
+class Embed:
+    file_path: Path
+    start_line: int
+    end_line: Optional[int]
 
-    if options:
-        option = options[0]
-        range_, *_ = option.split("]", 1)
-        idxs = [f.strip() for f in range_.split("-", 1)]
+    @classmethod
+    def from_string(cls, embed_string: str) -> Embed:
+        path, *other = re.split(r"\[([\d\s\-:]*)\]", embed_string)
+        line_range, *_ = other or ["1"]
+        start, end = (re.split(r"-|:", line_range) + [""])[:2]
 
-        if len(idxs) == 1:
-            start = 0 if not idxs[0] else int(idxs[0]) - 1
-            return file_path, start, None
-        elif len(idxs) == 2:
-            start = 0 if not idxs[0] else int(idxs[0]) - 1
-            end = None if not idxs[1] else int(idxs[1])
-            return file_path, start, end
+        return cls(
+            file_path=Path(path.strip()),
+            start_line=int(start) or 1,
+            end_line=int(end) if end else None,
+        )
 
-    return file_path, 0, None
+    def get_code(self) -> str:
+        with self.file_path.open() as file:
+            code = "".join(file.readlines()[self.start_line - 1:self.end_line])
+
+            return f"{code}\n" if code[-1] != "\n" else code
 
 
 class MarkdownEmbCodeRenderer(MarkdownRenderer):
@@ -30,28 +40,14 @@ class MarkdownEmbCodeRenderer(MarkdownRenderer):
         lang = element.__dict__.get("lang")
         lang, *options = lang.rsplit(":", 1)
 
-        if not options:
-            return super().render_fenced_code(element)
+        if options:
+            option = options[0]
 
-        option = options[0]
+            if element.__dict__.get("extra"):
+                option += element.__dict__.get("extra")
 
-        if element.__dict__.get("extra"):
-            option += element.__dict__.get("extra")
+            element.children[0].children = Embed.from_string(option).get_code()
 
-        file_path, start, end = parse(option)
-
-        with file_path.open() as f:
-            if start == 0 and end is None:
-                code = f.read() + "\n"
-            elif end is None:
-                code = "".join(f.readlines()[start:]) + "\n"
-            else:
-                out = f.readlines()
-                code = "".join(out[start:end])
-                if len(out) < end:
-                    code += "\n"
-
-        element.children[0].children = code
         return super().render_fenced_code(element)
 
     def render_image(self, element):
@@ -65,5 +61,5 @@ class MarkdownEmbCodeRenderer(MarkdownRenderer):
 _markdown = Markdown(renderer=MarkdownEmbCodeRenderer)
 
 
-def convert(document: str):
+def render(document: str):
     return _markdown(document)
