@@ -1,12 +1,11 @@
 import subprocess
 import sys
-
 from pathlib import Path
 from typing import List
 
 from pydantic import BaseSettings, SecretStr
 
-from markdown_embed_code import convert
+from markdown_embed_code import render
 
 
 class Settings(BaseSettings):
@@ -51,10 +50,10 @@ if not ref:
 if Path(settings.input_markdown).is_dir():
     settings.input_markdown = f'{settings.input_markdown}/*.md'
 
-for path in Path(".").glob(settings.input_markdown):
-    with open(path, "r+") as f:
-        overwrite_file(f, convert(f.read()))
-        run_command(["git", "add", path])
+for file_path in Path(".").glob(settings.input_markdown):
+    with file_path.open("r+") as file:
+        overwrite_file(file, render(file.read()))
+        run_command(["git", "add", file_path])
 
 git_status_output = run_command(
     ["git", "status", "--porcelain"],
@@ -66,4 +65,4 @@ if git_status_output:
     remote_repo = f"https://{settings.github_actor}:{settings.input_token.get_secret_value()}@github.com/{settings.github_repository}.git"
     run_command(["git", "push", remote_repo, f"HEAD:{ref}"])
 else:
-    print("No changes were made.")
+    print("No changes to commit.")
