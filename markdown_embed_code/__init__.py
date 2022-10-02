@@ -3,7 +3,7 @@ from __future__ import annotations
 import re
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, ClassVar, Iterator, Optional
+from typing import Iterator, Optional
 
 from marko import Markdown
 from marko.md_renderer import MarkdownRenderer
@@ -52,12 +52,9 @@ class Embed:
 
 class MarkdownEmbCodeRenderer(MarkdownRenderer):
     def render_fenced_code(self, element):
-        try:
-            ed = element.__dict__
-            fenced_code_parameters = f'{ed.get("lang").rsplit(":", 1)[1]}{ed.get("extra", "")}'
-            element.children[0].children = Embed.from_string(fenced_code_parameters).code
-        except IndexError:
-            pass
+        extra_options = element.__dict__["extra"]
+        if extra_options:
+            element.children[0].children = Embed.from_string(extra_options).code
 
         return super().render_fenced_code(element)
 

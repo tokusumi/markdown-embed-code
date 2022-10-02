@@ -13,15 +13,17 @@ Supports code blocks in any language. Your original markdown file(s) will be ove
 
 In markdown, reference your file as follows in an otherwise empty code block.
 
+NOTE: This action and the one it was forked from previously used a semicolon to separate the language and the file being embedded. I've since become aware of at least one
+
 ````markdown
-```python:tests/src/sample.py
+```python tests/src/sample.py
 
 ```
 ````
 
 The action reads in the content from `tests/src/sample.py` and inserts its contents into your code block like so:
 
-```python:tests/src/sample.py
+```python tests/src/sample.py
 from math import sqrt
 
 
@@ -37,14 +39,14 @@ Any contents within your code block will be overwritten. Paths are relative to t
 You can pull in a snippet from a file by including a range of line numbers like so:
 
 ````markdown
-```python:tests/src/sample.py [4-5]
+```python tests/src/sample.py [4-5]
 
 ```
 ````
 
 Which will render the following output.
 
-```python:tests/src/sample.py [4-5]
+```python tests/src/sample.py [4-5]
 def sample(x):
     return sqrt(x)
 ```
