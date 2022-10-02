@@ -52,11 +52,9 @@ class Embed:
 
 class MarkdownEmbCodeRenderer(MarkdownRenderer):
     def render_fenced_code(self, element):
-        try:
-            fenced_code_options = f'{element.__dict__.get("lang", "")}{element.__dict__.get("extra", "")}'
-            element.children[0].children = Embed.from_string(re.split("\s+", fenced_code_options, 1)[1]).code
-        except IndexError:
-            pass
+        extra_options = element.__dict__["extra"]
+        if extra_options:
+            element.children[0].children = Embed.from_string(extra_options).code
 
         return super().render_fenced_code(element)
 
