@@ -13,7 +13,7 @@ Supports code blocks in any language. Your original markdown file(s) will be ove
 
 In markdown, reference your file as follows in an otherwise empty code block.
 
-NOTE: This action and the one it was forked from previously used a semicolon to separate the language and the file being embedded. I've since become aware of at least one
+NOTE: This action and the one it was forked from previously used a semicolon to separate the language and the file being embedded. I've since become aware of at least one grammar where semicolon is significant. This causes the previous syntax to break highlighting. The library now breaks on the first space after the language. This will hopefully be universally compatable with all grammars.
 
 ````markdown
 ```python tests/src/sample.py
