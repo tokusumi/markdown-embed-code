@@ -53,9 +53,8 @@ class Embed:
 class MarkdownEmbCodeRenderer(MarkdownRenderer):
     def render_fenced_code(self, element):
         try:
-            ed = element.__dict__
-            fenced_code_parameters = f'{ed.get("lang").rsplit(":", 1)[1]}{ed.get("extra", "")}'
-            element.children[0].children = Embed.from_string(fenced_code_parameters).code
+            fenced_code_options = f'{element.__dict__.get("lang", "")}{element.__dict__.get("extra", "")}'
+            element.children[0].children = Embed.from_string(re.split("\s+", fenced_code_options, 1)[1]).code
         except IndexError:
             pass
 
