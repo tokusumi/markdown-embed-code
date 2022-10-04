@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import itertools
 import re
 from dataclasses import dataclass
 from pathlib import Path
@@ -16,12 +17,8 @@ def slice_file(
     start_at: int = 1,
     end_at: Optional[int] = None,
 ) -> Lines:
-    start_at -= 1
     with file_path.open() as file:
-        for line_number, line in enumerate(file):
-            if end_at and line_number >= end_at:
-                break
-            if line_number >= start_at:
+        for line in itertools.islice(file, start_at - 1, end_at):
                 yield f"{line}\n" if line[-1] != "\n" else line
 
 
