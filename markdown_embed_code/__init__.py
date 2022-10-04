@@ -13,7 +13,7 @@ Lines = Iterator[str]
 
 def slice_file(
     file_path: Path,
-    start_at: Optional[int] = 1,
+    start_at: int = 1,
     end_at: Optional[int] = None,
 ) -> Lines:
     start_at -= 1
