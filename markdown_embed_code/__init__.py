@@ -49,9 +49,8 @@ class Embed:
 
 class MarkdownEmbCodeRenderer(MarkdownRenderer):
     def render_fenced_code(self, element):
-        extra_options = element.__dict__["extra"]
-        if extra_options:
-            element.children[0].children = Embed.from_string(extra_options).code
+        if element.__dict__["extra"]:
+            element.children[0].children = Embed.from_string(element.__dict__["extra"]).code
 
         return super().render_fenced_code(element)
 
