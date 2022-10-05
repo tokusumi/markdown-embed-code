@@ -31,13 +31,13 @@ class Embed:
     @classmethod
     def from_string(cls, file_path: str) -> Embed:
         try:
-            pattern = r"(?P<file_path>.*)\[\s*(?P<start_at>\d+)\s*(?:-|:|,)?\s*(?P<end_at>\d*)?\s*\]"
+            pattern = r"\s*(?P<file_path>.+\S)(?:\s*\[\s*(?P<start_at>\d+)\s*(?:-|:|,)?\s*(?P<end_at>\d*)?\s*\])"
             file_path, start_at, end_at = match(pattern, file_path).group("file_path", "start_at", "end_at")
         except AttributeError:
             start_at, end_at = 1, None
 
         return cls(
-            file_path=Path(file_path.strip()),
+            file_path=Path(file_path),
             start_at=int(start_at) or 1,
             end_at=int(end_at) if end_at else None,
         )
