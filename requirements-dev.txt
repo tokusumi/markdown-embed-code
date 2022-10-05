@@ -1,6 +1,7 @@
 autoflake=1.5.3
 black=22.8.0
 flake8=5.0.4
+gitpython==3.1.27
 isort=5.10.1
 marko==1.2.1
 pydantic==1.10.2

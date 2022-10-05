@@ -62,5 +62,5 @@ class MarkdownEmbedCodeRenderer(MarkdownRenderer):
 _markdown = Markdown(renderer=MarkdownEmbedCodeRenderer)
 
 
-def render(document: str):
+def render(document: str) -> str:
     return _markdown(document)

@@ -1,8 +1,9 @@
-import subprocess
-import sys
 from pathlib import Path
-from typing import List
+from subprocess import run
+from sys import exit
+from typing import TextIO
 
+from git import Actor, Repo
 from pydantic import BaseSettings, SecretStr
 
 from markdown_embed_code import render
@@ -18,15 +19,7 @@ class Settings(BaseSettings):
     input_token: SecretStr
 
 
-def run_command(command: List, **kwargs):
-    return subprocess.run(
-        command,
-        check=True,
-        **kwargs,
-    )
-
-
-def overwrite_file(file_handle, new_contents):
+def overwrite_file(file_handle: TextIO, new_contents: str):
     file_handle.seek(0)
     file_handle.write(new_contents)
     file_handle.truncate()
@@ -34,35 +27,40 @@ def overwrite_file(file_handle, new_contents):
 
 settings = Settings()
 
-# The checkout action checks out code as the runner user (1001:121). Our docker image runs as root
-# as recommended by the GitHub actions documentation. For that reason, we're ensuring he the user
-# running the script owns the workspace. Otherwise, the subsequent git commands will fail.
-run_command("chown -R $(id -u):$(id-g) .", shell=True)
-
-run_command(["git", "config", "--local", "user.name", "github-actions"])
-run_command(["git", "config", "--local", "user.email", "github-actions@github.com"])
-
 ref = settings.github_head_ref or settings.github_ref
 
 if not ref:
-    sys.exit(1)
+    exit(1)
 
-if Path(settings.input_markdown).is_dir():
-    settings.input_markdown = f'{settings.input_markdown}/*.md'
+# WORKAROUND: The checkout action checks the rpo out as the runner user (uid 1001) causing issues with
+# this script running in our container as root, which is recommended by the actions documentation.
+# The below ensures that the runner of this script can do its work.
+run(
+    f"chown -R $(id -u) .",
+    check=True,
+    shell=True,
+)
 
-for file_path in Path(".").glob(settings.input_markdown):
+repo = Repo(".")
+repo.remotes.origin.set_url(
+    f"https://{settings.github_actor}:{settings.input_token.get_secret_value()}@github.com/{settings.github_repository}.git"
+)
+
+markdown_glob = f'{settings.input_markdown}/*.md' if Path(settings.input_markdown).is_dir() else settings.input_markdown
+
+for file_path in Path(".").glob(markdown_glob):
     with file_path.open("r+") as file:
         overwrite_file(file, render(file.read()))
-        run_command(["git", "add", file_path])
+        repo.index.add([str(file_path)])
 
-git_status_output = run_command(
-    ["git", "status", "--porcelain"],
-    stdout=subprocess.PIPE,
-).stdout
-
-if git_status_output:
-    run_command(["git", "commit", "-m", settings.input_message])
-    remote_repo = f"https://{settings.github_actor}:{settings.input_token.get_secret_value()}@github.com/{settings.github_repository}.git"
-    run_command(["git", "push", remote_repo, f"HEAD:{ref}"])
+if repo.is_dirty(untracked_files=True):
+    repo.index.commit(
+        settings.input_message,
+        author=Actor(
+            name=settings.github_actor,
+            email="github-actions@github.com",
+        ),
+    )
+    repo.remotes.origin.push(f"HEAD:{ref}").raise_if_error()
 else:
     print("No changes to commit.")
