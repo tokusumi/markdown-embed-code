@@ -1,28 +1,23 @@
 from __future__ import annotations
 
-import re
 from dataclasses import dataclass
+from itertools import islice
 from pathlib import Path
+from re import match
 from typing import Iterator, Optional
 
 from marko import Markdown
 from marko.md_renderer import MarkdownRenderer
 
-Lines = Iterator[str]
 
-
-def slice_file(
+def file_slice(
     file_path: Path,
-    start_at: Optional[int] = 1,
+    start_at: int = 1,
     end_at: Optional[int] = None,
-) -> Lines:
-    start_at -= 1
+) -> Iterator[str]:
     with file_path.open() as file:
-        for line_number, line in enumerate(file):
-            if end_at and line_number >= end_at:
-                break
-            if line_number >= start_at:
-                yield f"{line}\n" if line[-1] != "\n" else line
+        for line in islice(file, start_at - 1, end_at):
+            yield f"{line}\n" if line[-1] != "\n" else line
 
 
 @dataclass
@@ -32,29 +27,27 @@ class Embed:
     end_at: Optional[int]
 
     @classmethod
-    def from_string(cls, path: str) -> Embed:
+    def parse_from_extra(cls, extra: str) -> Embed:
         try:
-            start_at, end_at = 1, None
-            path, start_at, end_at = re.match(r"(.*)\[\s*(\d*)?\s*(?:-|:|,)?\s*(\d*)?\s*\]", path).group(1, 2, 3)
+            pattern = r"\s*(?P<file_path>.+\S)(?:\s*\[\s*(?P<start_at>\d+)\s*(?:-|:|,)?\s*(?P<end_at>\d*)?\s*\])"
+            file_path, start_at, end_at = match(pattern, extra).group("file_path", "start_at", "end_at")
         except AttributeError:
-            pass
+            file_path, start_at, end_at = extra, 1, None
 
         return cls(
-            file_path=Path(path.strip()),
-            start_at=int(start_at or 1) or 1,
+            file_path=Path(file_path),
+            start_at=int(start_at) or 1,
             end_at=int(end_at) if end_at else None,
         )
 
-    @property
-    def code(self) -> str:
-        return ''.join(slice_file(**self.__dict__))
+    def __str__(self) -> str:
+        return ''.join(file_slice(**self.__dict__))
 
 
-class MarkdownEmbCodeRenderer(MarkdownRenderer):
+class MarkdownEmbedCodeRenderer(MarkdownRenderer):
     def render_fenced_code(self, element):
-        extra_options = element.__dict__["extra"]
-        if extra_options:
-            element.children[0].children = Embed.from_string(extra_options).code
+        if element.__dict__["extra"]:
+            element.children[0].children = str(Embed.parse_from_extra(element.__dict__["extra"]))
 
         return super().render_fenced_code(element)
 
@@ -66,7 +59,7 @@ class MarkdownEmbCodeRenderer(MarkdownRenderer):
         return template.format(self.render_children(element), element.dest, title)
 
 
-_markdown = Markdown(renderer=MarkdownEmbCodeRenderer)
+_markdown = Markdown(renderer=MarkdownEmbedCodeRenderer)
 
 
 def render(document: str):
