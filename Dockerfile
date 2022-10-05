@@ -11,4 +11,6 @@ RUN apk add --no-cache --update \
 
 COPY ./markdown_embed_code $APP_DIR/markdown_embed_code
 
-CMD ["python", "-m", "markdown_embed_code"]
+COPY ./scripts/entrypoint.sh $APP_DIR/entrypoint.sh
+
+CMD ["docker-entrypoint.sh"]
