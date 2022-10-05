@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-import itertools
-import re
 from dataclasses import dataclass
+from itertools import islice
 from pathlib import Path
+from re import match
 from typing import Iterator, Optional
 
 from marko import Markdown
@@ -18,7 +18,7 @@ def slice_file(
     end_at: Optional[int] = None,
 ) -> Lines:
     with file_path.open() as file:
-        for line in itertools.islice(file, start_at - 1, end_at):
+        for line in islice(file, start_at - 1, end_at):
                 yield f"{line}\n" if line[-1] != "\n" else line
 
 
@@ -32,7 +32,7 @@ class Embed:
     def from_string(cls, file_path: str) -> Embed:
         try:
             pattern = r"(?P<file_path>.*)\[\s*(?P<start_at>\d+)\s*(?:-|:|,)?\s*(?P<end_at>\d*)?\s*\]"
-            file_path, start_at, end_at = re.match(pattern, file_path).group("file_path", "start_at", "end_at")
+            file_path, start_at, end_at = match(pattern, file_path).group("file_path", "start_at", "end_at")
         except AttributeError:
             start_at, end_at = 1, None
 
