@@ -19,7 +19,7 @@ def slice_file(
 ) -> Lines:
     with file_path.open() as file:
         for line in islice(file, start_at - 1, end_at):
-                yield f"{line}\n" if line[-1] != "\n" else line
+            yield f"{line}\n" if line[-1] != "\n" else line
 
 
 @dataclass
