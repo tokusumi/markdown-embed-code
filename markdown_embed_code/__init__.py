@@ -40,15 +40,14 @@ class Embed:
             end_at=int(end_at) if end_at else None,
         )
 
-    @property
-    def code(self) -> str:
+    def __str__(self) -> str:
         return ''.join(slice_file(**self.__dict__))
 
 
 class MarkdownEmbCodeRenderer(MarkdownRenderer):
     def render_fenced_code(self, element):
         if element.__dict__["extra"]:
-            element.children[0].children = Embed.from_string(element.__dict__["extra"]).code
+            element.children[0].children = str(Embed.from_string(element.__dict__["extra"]))
 
         return super().render_fenced_code(element)
 
