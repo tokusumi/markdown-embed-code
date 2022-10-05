@@ -62,5 +62,13 @@ class MarkdownEmbedCodeRenderer(MarkdownRenderer):
 _markdown = Markdown(renderer=MarkdownEmbedCodeRenderer)
 
 
-def render(document: str) -> str:
+def render_markdown(document: str) -> str:
     return _markdown(document)
+
+
+def render_markdown_file(file_path: Path):
+    with file_path.open("r+") as file:
+        rendered_contents = render_markdown(file.read())
+        file.seek(0)
+        file.write(rendered_contents)
+        file.truncate()
