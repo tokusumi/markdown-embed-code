@@ -13,4 +13,4 @@ COPY ./markdown_embed_code $APP_DIR/markdown_embed_code
 
 COPY ./scripts/docker-entrypoint.sh /usr/local/bin/
 
-CMD ["docker-entrypoint.sh"]
+CMD ["/usr/local/bin/docker-entrypoint.sh"]
