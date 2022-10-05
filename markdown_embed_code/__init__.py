@@ -44,7 +44,7 @@ class Embed:
         return ''.join(file_slice(**self.__dict__))
 
 
-class MarkdownEmbCodeRenderer(MarkdownRenderer):
+class MarkdownEmbedCodeRenderer(MarkdownRenderer):
     def render_fenced_code(self, element):
         if element.__dict__["extra"]:
             element.children[0].children = str(Embed.parse_from_extra(element.__dict__["extra"]))
@@ -59,7 +59,7 @@ class MarkdownEmbCodeRenderer(MarkdownRenderer):
         return template.format(self.render_children(element), element.dest, title)
 
 
-_markdown = Markdown(renderer=MarkdownEmbCodeRenderer)
+_markdown = Markdown(renderer=MarkdownEmbedCodeRenderer)
 
 
 def render(document: str):
