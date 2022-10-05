@@ -29,16 +29,16 @@ class Embed:
     end_at: Optional[int]
 
     @classmethod
-    def from_string(cls, path: str) -> Embed:
+    def from_string(cls, file_path: str) -> Embed:
         try:
-            start_at, end_at = 1, None
-            path, start_at, end_at = re.match(r"(.*)\[\s*(\d*)?\s*(?:-|:|,)?\s*(\d*)?\s*\]", path).group(1, 2, 3)
+            pattern = r"(?P<file_path>.*)\[\s*(?P<start_at>\d+)\s*(?:-|:|,)?\s*(?P<end_at>\d*)?\s*\]"
+            file_path, start_at, end_at = re.match(pattern, file_path).group("file_path", "start_at", "end_at")
         except AttributeError:
-            pass
+            start_at, end_at = 1, None
 
         return cls(
-            file_path=Path(path.strip()),
-            start_at=int(start_at or 1) or 1,
+            file_path=Path(file_path.strip()),
+            start_at=int(start_at) or 1,
             end_at=int(end_at) if end_at else None,
         )
 
