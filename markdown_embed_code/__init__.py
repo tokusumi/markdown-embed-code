@@ -9,14 +9,12 @@ from typing import Iterator, Optional
 from marko import Markdown
 from marko.md_renderer import MarkdownRenderer
 
-Lines = Iterator[str]
-
 
 def slice_file(
     file_path: Path,
     start_at: int = 1,
     end_at: Optional[int] = None,
-) -> Lines:
+) -> Iterator[str]:
     with file_path.open() as file:
         for line in islice(file, start_at - 1, end_at):
             yield f"{line}\n" if line[-1] != "\n" else line
