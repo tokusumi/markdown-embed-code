@@ -27,12 +27,12 @@ class Embed:
     end_at: Optional[int]
 
     @classmethod
-    def from_string(cls, file_path: str) -> Embed:
+    def parse_from_extra(cls, extra: str) -> Embed:
         try:
             pattern = r"\s*(?P<file_path>.+\S)(?:\s*\[\s*(?P<start_at>\d+)\s*(?:-|:|,)?\s*(?P<end_at>\d*)?\s*\])"
-            file_path, start_at, end_at = match(pattern, file_path).group("file_path", "start_at", "end_at")
+            file_path, start_at, end_at = match(pattern, extra).group("file_path", "start_at", "end_at")
         except AttributeError:
-            start_at, end_at = 1, None
+            file_path, start_at, end_at = extra, 1, None
 
         return cls(
             file_path=Path(file_path),
@@ -47,7 +47,7 @@ class Embed:
 class MarkdownEmbCodeRenderer(MarkdownRenderer):
     def render_fenced_code(self, element):
         if element.__dict__["extra"]:
-            element.children[0].children = str(Embed.from_string(element.__dict__["extra"]))
+            element.children[0].children = str(Embed.parse_from_extra(element.__dict__["extra"]))
 
         return super().render_fenced_code(element)
 
