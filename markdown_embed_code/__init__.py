@@ -10,7 +10,7 @@ from marko import Markdown
 from marko.md_renderer import MarkdownRenderer
 
 
-def slice_file(
+def file_slice(
     file_path: Path,
     start_at: int = 1,
     end_at: Optional[int] = None,
@@ -41,7 +41,7 @@ class Embed:
         )
 
     def __str__(self) -> str:
-        return ''.join(slice_file(**self.__dict__))
+        return ''.join(file_slice(**self.__dict__))
 
 
 class MarkdownEmbCodeRenderer(MarkdownRenderer):
