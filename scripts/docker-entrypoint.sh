@@ -2,4 +2,5 @@
 
 set -e
 
-exec su -c "python -m markdown_embed_code" $(stat -c %u $GITHUB_WORKSPACE)
+git config --global --add safe.directory  $GITHUB_WORKSPACE
+exec python -m markdown_embed_code
