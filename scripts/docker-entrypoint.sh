@@ -2,4 +2,4 @@
 
 set -e
 
-exec -u $(stat -c %U $GITHUB_WORKSPACE) python -m markdown_embed_code
+exec su -c "python -m markdown_embed_code" $(stat -c %U $GITHUB_WORKSPACE)
